@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel - Hosting Estrella</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Panel de Servidor</h1>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="hosting.html">Crear Hosting</a>
+      <a href="panel.html">Panel</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="serverInfo">
+      <h2>Información del Servidor</h2>
+      <p><strong>Nombre:</strong> <span id="serverName"></span></p>
+      <p><strong>Dominio:</strong> <span id="serverDomain"></span></p>
+      <p><strong>Software:</strong> <span id="serverSoftware"></span></p>
+      <p><strong>RAM:</strong> <span id="serverRam"></span> GB</p>
+      <p><strong>Máximo jugadores:</strong> <span id="serverPlayers"></span></p>
+      <p><strong>Plugins / Mobs:</strong> <span id="serverPlugins"></span></p>
+    </section>
+
+    <section id="actions">
+      <h2>Acciones</h2>
+      <button id="startBtn">Encender</button>
+      <button id="stopBtn">Apagar</button>
+      <button id="restartBtn">Reiniciar</button>
+    </section>
+
+    <section id="console">
+      <h2>Consola</h2>
+      <pre id="consoleOutput" style="background:#000; color:#0f0; height:200px; overflow:auto;"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Hosting Estrella. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    // Obtener el primer servidor guardado para demo
+    let servers = JSON.parse(localStorage.getItem('servers') || '[]');
+    let currentServer = servers[0] || null;
+
+    function updateServerInfo() {
+      if (!currentServer) {
+        document.getElementById('serverInfo').innerHTML = '<p>No tienes servidores creados.</p>';
+        return;
+      }
+      document.getElementById('serverName').textContent = currentServer.serverName;
+      document.getElementById('serverDomain').textContent = currentServer.domain;
+      document.getElementById('serverSoftware').textContent = currentServer.software;
+      document.getElementById('serverRam').textContent = currentServer.ram;
+      document.getElementById('serverPlayers').textContent = currentServer.maxPlayers;
+      document.getElementById('serverPlugins').textContent = currentServer.plugins.join(', ');
+    }
+
+    updateServerInfo();
+
+    const consoleOutput = document.getElementById('consoleOutput');
+
+    function logToConsole(message) {
+      consoleOutput.textContent += message + '\n';
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      logToConsole('Servidor iniciado...');
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      logToConsole('Servidor detenido.');
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      logToConsole('Servidor reiniciado.');
+    });
+  </script>
+</body>
+</html>
