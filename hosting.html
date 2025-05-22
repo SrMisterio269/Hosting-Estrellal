@@ -5,54 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Hosting</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; padding: 20px; }
-    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; margin: 0; padding: 0; }
+    .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
     h1 { color: #0077cc; }
-    label { display: block; margin-top: 10px; }
-    select, input[type=text] { width: 100%; padding: 8px; margin-top: 5px; }
-    .checkbox-group label { display: inline-block; margin-right: 15px; }
-    button { margin-top: 15px; padding: 10px 20px; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; }
-    button:disabled { background: #aaa; }
+    .tabs-nav { display: flex; margin-bottom: 20px; }
+    .tabs-nav button { flex: 1; padding: 10px; border: none; background: #e1e1e1; cursor: pointer; }
+    .tabs-nav button.active-tab { background: #0077cc; color: #fff; }
     .tab { display: none; }
-    .tabs-nav button { margin-right: 5px; }
-    .active { display: block; }
-    .server-list { margin-top: 20px; }
-    .server-item { padding: 10px; border-bottom: 1px solid #ddd; }
+    .tab.active { display: block; }
+    form label { display: block; margin-top: 10px; }
+    input[type=text], select { width: 100%; padding: 8px; margin-top: 5px; }
+    .checkbox-group label { display: inline-block; margin-right: 15px; margin-top: 10px; }
+    button.primary { margin-top: 15px; padding: 10px 20px; background: #0077cc; color: #fff; border: none; cursor: pointer; }
+    .server-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .server-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+    .server-card h3 { margin: 0; padding: 15px; background: #0077cc; color: #fff; }
+    .server-info { padding: 15px; flex: 1; }
+    .server-info p { margin: 5px 0; font-size: 14px; }
+    .server-actions { padding: 15px; text-align: right; }
+    .dash-tabs { display: flex; border-bottom: 1px solid #ddd; margin-top: 20px; }
+    .dash-tabs button { flex: 1; padding: 10px; border: none; background: #f1f1f1; cursor: pointer; }
+    .dash-tabs button.active-dash { background: #fff; border-bottom: 2px solid #0077cc; }
+    .dash-content { padding: 15px; }
+    .dash-section { display: none; }
+    .dash-section.active { display: block; }
+    textarea { width: 100%; height: 150px; }
+    .back-btn { margin-bottom: 15px; background: none; border: none; color: #0077cc; cursor: pointer; font-size: 16px; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="mainContainer">
     <h1>Panel de Hosting</h1>
     <div class="tabs-nav">
-      <button onclick="openTab('create')">Crear Servidor</button>
-      <button onclick="openTab('list')">Mis Servidores</button>
+      <button id="tab-create" class="active-tab">Crear Servidor</button>
+      <button id="tab-list">Mis Servidores</button>
     </div>
     <div id="create" class="tab active">
       <h2>Crear Nuevo Servidor</h2>
       <form id="createForm">
         <label>Nombre del servidor:<input type="text" id="serverName" placeholder="Ej: AmatistMC" required></label>
-        <label>Dominio:
+        <label>Dominio gratuito:
           <select id="domain">
-            <option value=".com">.com</option>
-            <option value=".net">.net</option>
-            <option value=".xyz">.xyz</option>
-          </select>
-        </label>
-        <label>Tipo de servidor:
-          <select id="type">
-            <option>Spigot</option>
-            <option>Bukkit</option>
-            <option>Vanilla</option>
-            <option>Paper</option>
+            <option value=".tk">.tk</option>
+            <option value=".ml">.ml</option>
+            <option value=".ga">.ga</option>
+            <option value=".cf">.cf</option>
+            <option value=".gq">.gq</option>
           </select>
         </label>
         <div class="checkbox-group">
-          <label><input type="checkbox" id="plugins"> Plugins</label>
+          <label><input type="checkbox" id="plugins"> Permitir Plugins</label>
           <label><input type="checkbox" id="mobs"> Mobs personalizados</label>
         </div>
-        <button type="submit">Crear Servidor</button>
+        <button type="submit" class="primary">Crear Servidor</button>
       </form>
-      <p id="message"></p>
+      <p id="messageCreate"></p>
     </div>
     <div id="list" class="tab">
       <h2>Mis Servidores</h2>
@@ -62,51 +69,93 @@
   <script>
     const MAX_SERVERS = 50;
     let servers = JSON.parse(localStorage.getItem('servers') || '[]');
-
-    function saveServers() {
-      localStorage.setItem('servers', JSON.stringify(servers));
-    }
-
-    function renderServers() {
-      const list = document.getElementById('servers');
-      list.innerHTML = '';
-      servers.forEach((s, i) => {
-        const div = document.createElement('div');
-        div.className = 'server-item';
-        div.innerHTML = `<strong>${s.name}${s.domain}</strong> - ${s.type} - Plugins: ${s.plugins? 'Sí':'No'} - Mobs: ${s.mobs? 'Sí':'No'}`;
-        list.appendChild(div);
+    function saveServers(){ localStorage.setItem('servers', JSON.stringify(servers)); }
+    function renderServers(){
+      const list = document.getElementById('servers'); list.innerHTML='';
+      servers.forEach((s,i)=>{
+        const card=document.createElement('div'); card.className='server-card';
+        card.innerHTML=`
+          <h3>${s.name}${s.domain}</h3>
+          <div class="server-info">
+            <p><strong>Tipo:</strong> ${s.type}</p>
+            <p><strong>Jugadores:</strong> 0 / ${s.maxPlayers||80}</p>
+            <p><strong>Plugins:</strong> ${s.plugins?'Sí':'No'}</p>
+            <p><strong>Mobs:</strong> ${s.mobs?'Sí':'No'}</p>
+          </div>
+          <div class="server-actions"><button onclick="openDashboard(${i})">Dashboard</button></div>
+        `;
+        list.appendChild(card);
       });
     }
-
-    document.getElementById('createForm').addEventListener('submit', e => {
-      e.preventDefault();
-      if (servers.length >= MAX_SERVERS) {
-        document.getElementById('message').textContent = 'Has alcanzado el límite de 50 servidores';
-        return;
-      }
-      const name = document.getElementById('serverName').value.trim();
-      const domain = document.getElementById('domain').value;
-      const type = document.getElementById('type').value;
-      const plugins = document.getElementById('plugins').checked;
-      const mobs = document.getElementById('mobs').checked;
-      const server = { name, domain, type, plugins, mobs };
-      servers.push(server);
-      saveServers();
-      renderServers();
-      const url = `https://${name}${domain}`;
-      window.open(url, '_blank');
-      document.getElementById('message').textContent = `Servidor '${name}${domain}' creado y abierto en nueva pestaña.`;
-      e.target.reset();
-    });
-
-    function openTab(id) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      if (id === 'list') renderServers();
+    function openDashboard(index){
+      const s=servers[index];
+      const container=document.getElementById('mainContainer');
+      container.innerHTML=`
+        <button class="back-btn" onclick="navigateList()">← Volver a Mis Servidores</button>
+        <h1>Dashboard: ${s.name}${s.domain}</h1>
+        <div class="dash-tabs">
+          <button class="active-dash" data-tab="panel">Panel</button>
+          <button data-tab="console">Consola</button>
+          <button data-tab="files">File Manager</button>
+          <button data-tab="db">Databases</button>
+          <button data-tab="settings">Settings</button>
+          <button data-tab="team">Server Team</button>
+        </div>
+        <div class="dash-content">
+          <div id="panel" class="dash-section active">
+            <p>Estado: En línea</p><p>Jugadores: 0/${s.maxPlayers||80}</p>
+          </div>
+          <div id="console" class="dash-section">
+            <textarea readonly>-- Consola del servidor --</textarea>
+          </div>
+          <div id="files" class="dash-section">
+            <p>File Manager placeholder</p>
+          </div>
+          <div id="db" class="dash-section">
+            <p>Databases placeholder</p>
+          </div>
+          <div id="settings" class="dash-section">
+            <p>Settings placeholder</p>
+          </div>
+          <div id="team" class="dash-section">
+            <p>Server Team placeholder</p>
+          </div>
+        </div>`;
+      document.querySelectorAll('.dash-tabs button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('.dash-tabs button').forEach(b=>b.classList.remove('active-dash'));
+          btn.classList.add('active-dash');
+          const tab=btn.getAttribute('data-tab');
+          document.querySelectorAll('.dash-section').forEach(sec=>sec.classList.remove('active'));
+          document.getElementById(tab).classList.add('active');
+        });
+      });
     }
-
-    // Render inicial
-    renderServers();
+    function navigateList(){ location.hash=''; location.reload(); }
+    document.getElementById('createForm').addEventListener('submit',e=>{
+      e.preventDefault(); const msg=document.getElementById('messageCreate');
+      if(servers.length>=MAX_SERVERS){msg.textContent='Límite de 50 servidores.';return;}
+      const name=document.getElementById('serverName').value.trim();
+      const domain=document.getElementById('domain').value;
+      const plugins=document.getElementById('plugins').checked;
+      const mobs=document.getElementById('mobs').checked;
+      const server={name,domain,type:'Spigot',plugins,mobs,premium:false,maxPlayers:80,extPlugins:'',extMobs:''};
+      servers.push(server);saveServers();renderServers();msg.textContent=`Servidor '${name}${domain}' creado.`;e.target.reset();
+    });
+    document.getElementById('tab-create').addEventListener('click',()=>switchTab('create','tab-create'));
+    document.getElementById('tab-list').addEventListener('click',()=>switchTab('list','tab-list'));
+    function switchTab(tab,btn){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.querySelectorAll('.tabs-nav button').forEach(b=>b.classList.remove('active-tab'));
+      document.getElementById(btn).classList.add('active-tab');
+      if(tab==='list')renderServers();
+    }
+    window.addEventListener('load',()=>{
+      renderServers();
+      const hash=location.hash.replace('#','');
+      if(hash && servers[hash]) openDashboard(parseInt(hash));
+    });
   </script>
 </body>
 </html>
