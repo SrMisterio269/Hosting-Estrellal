@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Hosting</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { color: #0077cc; }
+    label { display: block; margin-top: 10px; }
+    select, input[type=text] { width: 100%; padding: 8px; margin-top: 5px; }
+    .checkbox-group label { display: inline-block; margin-right: 15px; }
+    button { margin-top: 15px; padding: 10px 20px; border: none; border-radius: 4px; background: #0077cc; color: white; cursor: pointer; }
+    button:disabled { background: #aaa; }
+    .tab { display: none; }
+    .tabs-nav button { margin-right: 5px; }
+    .active { display: block; }
+    .server-list { margin-top: 20px; }
+    .server-item { padding: 10px; border-bottom: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Panel de Hosting</h1>
+    <div class="tabs-nav">
+      <button onclick="openTab('create')">Crear Servidor</button>
+      <button onclick="openTab('list')">Mis Servidores</button>
+    </div>
+    <div id="create" class="tab active">
+      <h2>Crear Nuevo Servidor</h2>
+      <form id="createForm">
+        <label>Nombre del servidor:<input type="text" id="serverName" placeholder="Ej: AmatistMC" required></label>
+        <label>Dominio:
+          <select id="domain">
+            <option value=".com">.com</option>
+            <option value=".net">.net</option>
+            <option value=".xyz">.xyz</option>
+          </select>
+        </label>
+        <label>Tipo de servidor:
+          <select id="type">
+            <option>Spigot</option>
+            <option>Bukkit</option>
+            <option>Vanilla</option>
+            <option>Paper</option>
+          </select>
+        </label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="plugins"> Plugins</label>
+          <label><input type="checkbox" id="mobs"> Mobs personalizados</label>
+        </div>
+        <button type="submit">Crear Servidor</button>
+      </form>
+      <p id="message"></p>
+    </div>
+    <div id="list" class="tab">
+      <h2>Mis Servidores</h2>
+      <div id="servers" class="server-list"></div>
+    </div>
+  </div>
+  <script>
+    const MAX_SERVERS = 50;
+    let servers = JSON.parse(localStorage.getItem('servers') || '[]');
+
+    function saveServers() {
+      localStorage.setItem('servers', JSON.stringify(servers));
+    }
+
+    function renderServers() {
+      const list = document.getElementById('servers');
+      list.innerHTML = '';
+      servers.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'server-item';
+        div.innerHTML = `<strong>${s.name}${s.domain}</strong> - ${s.type} - Plugins: ${s.plugins? 'Sí':'No'} - Mobs: ${s.mobs? 'Sí':'No'}`;
+        list.appendChild(div);
+      });
+    }
+
+    document.getElementById('createForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if (servers.length >= MAX_SERVERS) {
+        document.getElementById('message').textContent = 'Has alcanzado el límite de 50 servidores';
+        return;
+      }
+      const name = document.getElementById('serverName').value.trim();
+      const domain = document.getElementById('domain').value;
+      const type = document.getElementById('type').value;
+      const plugins = document.getElementById('plugins').checked;
+      const mobs = document.getElementById('mobs').checked;
+      const server = { name, domain, type, plugins, mobs };
+      servers.push(server);
+      saveServers();
+      renderServers();
+      const url = `https://${name}${domain}`;
+      window.open(url, '_blank');
+      document.getElementById('message').textContent = `Servidor '${name}${domain}' creado y abierto en nueva pestaña.`;
+      e.target.reset();
+    });
+
+    function openTab(id) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'list') renderServers();
+    }
+
+    // Render inicial
+    renderServers();
+  </script>
+</body>
+</html>
