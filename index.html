@@ -56,3 +56,408 @@
   </section>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel Hosting EstelHosting</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header>
+        <h1>Panel de Control - EstelHosting</h1>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="showSection('console')">Consola</a></li>
+                <li><a href="#" onclick="showSection('filemanager')">File Manager</a></li>
+                <li><a href="#" onclick="showSection('databases')">Databases</a></li>
+                <li><a href="#" onclick="showSection('settings')">Settings</a></li>
+                <li><a href="#" onclick="showSection('serverteam')">Server Team</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard" class="section active">
+            <h2>Dashboard</h2>
+            <p>Información general del servidor</p>
+            <div id="serverInfo">
+                <p><strong>IP:</strong> AmatistMC.net</p>
+                <p><strong>Puerto:</strong> 25565</p>
+                <p><strong>Software:</strong> Spigot</p>
+                <p><strong>Versión:</strong> 1.20.1</p>
+                <p><strong>RAM asignada:</strong> 8GB</p>
+                <p><strong>CPU asignada:</strong> 4 Cores</p>
+                <p><strong>Usuarios conectados:</strong> 20 / 80</p>
+            </div>
+        </section>
+
+        <section id="console" class="section">
+            <h2>Consola</h2>
+            <div id="consoleOutput" style="background:#000; color:#0f0; height:300px; overflow-y:scroll; padding:10px; font-family: monospace;">
+                <!-- Aquí irán los logs y mensajes -->
+            </div>
+            <button onclick="startServer()">Encender</button>
+            <button onclick="stopServer()">Apagar</button>
+            <button onclick="restartServer()">Reiniciar</button>
+            <p><strong>Uso RAM:</strong> <span id="ramUsage">3GB</span> / 8GB</p>
+            <p><strong>Uso CPU:</strong> <span id="cpuUsage">25%</span></p>
+        </section>
+
+        <section id="filemanager" class="section">
+            <h2>File Manager</h2>
+            <div id="fileTree">
+                <ul>
+                    <li>.cache/
+                        <ul>
+                            <li>file1.cache</li>
+                        </ul>
+                    </li>
+                    <li>cache/
+                        <ul>
+                            <li>file2.cache</li>
+                        </ul>
+                    </li>
+                    <li>config/
+                        <ul>
+                            <li>server.properties</li>
+                            <li>bukkit.yml</li>
+                        </ul>
+                    </li>
+                    <li>libraries/</li>
+                    <li>logs/
+                        <ul>
+                            <li>latest.log</li>
+                        </ul>
+                    </li>
+                    <li>plugins/mobs/
+                        <ul>
+                            <li>plugin1.jar</li>
+                            <li>mob1.jar</li>
+                        </ul>
+                    </li>
+                    <li>versions/</li>
+                    <li>world/</li>
+                    <li>world_nether/</li>
+                    <li>world_the_end/</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="databases" class="section">
+            <h2>Databases</h2>
+            <p>Gestión de bases de datos (simulado)</p>
+        </section>
+
+        <section id="settings" class="section">
+            <h2>Settings</h2>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <label for="serverName">Nombre del servidor:</label>
+                <input type="text" id="serverName" name="serverName" value="AmatistMC.net" required /><br/><br/>
+
+                <label for="software">Software:</label>
+                <select id="software" name="software">
+                    <option value="spigot" selected>Spigot</option>
+                    <option value="bukkit">Bukkit</option>
+                    <option value="paper">Paper</option>
+                    <option value="forge">Forge</option>
+                </select><br/><br/>
+
+                <label for="version">Versión:</label>
+                <select id="version" name="version">
+                    <option value="1.20.1" selected>1.20.1</option>
+                    <option value="1.19.4">1.19.4</option>
+                    <option value="1.18.2">1.18.2</option>
+                    <option value="1.17.1">1.17.1</option>
+                </select><br/><br/>
+
+                <label for="ip">IP:</label>
+                <input type="text" id="ip" name="ip" value="AmatistMC.net" required /><br/><br/>
+
+                <label for="port">Puerto:</label>
+                <input type="number" id="port" name="port" value="25565" required /><br/><br/>
+
+                <label for="ram">RAM (GB):</label>
+                <input type="number" id="ram" name="ram" value="8" min="1" max="32" required /><br/><br/>
+
+                <label for="cpu">CPU (Cores):</label>
+                <input type="number" id="cpu" name="cpu" value="4" min="1" max="16" required /><br/><br/>
+
+                <button type="submit">Guardar Configuración</button>
+            </form>
+        </section>
+
+        <section id="serverteam" class="section">
+            <h2>Server Team</h2>
+            <table border="1" width="100%" id="teamTable">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EstelHosting</td>
+                        <td>Dueño</td>
+                        <td><button onclick="removeUser(this)">Eliminar</button></td>
+                    </tr>
+                    <tr>
+                        <td>AmigoMC</td>
+                        <td>Administrador</td>
+                        <td><button onclick="removeUser(this)">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Añadir miembro</h3>
+            <form id="addUserForm" onsubmit="addUser(event)">
+                <input type="text" id="newUserName" placeholder="Nombre de usuario" required />
+                <select id="newUserRole" required>
+                    <option value="Miembro">Miembro</option>
+                    <option value="Moderador">Moderador</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Dueño">Dueño</option>
+                </select>
+                <button type="submit">Añadir</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #121212;
+    color: #eee;
+}
+
+header {
+    background: #222;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #4caf50;
+}
+
+header h1 {
+    font-weight: 700;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li a {
+    color: #4caf50;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    color: #81c784;
+}
+
+main {
+    padding: 20px 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #4caf50;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+form input[type="text"],
+form input[type="number"],
+form select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: none;
+    background: #333;
+    color: #eee;
+}
+
+form button {
+    background: #4caf50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+form button:hover {
+    background: #81c784;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    background: #222;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+table th {
+    background-color: #4caf50;
+    color: white;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #1e1e1e;
+}
+
+table tbody tr:hover {
+    background-color: #333;
+}
+
+button {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #81c784;
+}
+
+#fileTree ul {
+    list-style-type: none;
+}
+
+#fileTree ul li {
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+#fileTree ul li:hover {
+    color: #81c784;
+}
+// Función para mostrar una sección y ocultar las demás
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(sec => {
+        sec.classList.remove('active');
+    });
+    document.getElementById(sectionId).classList.add('active');
+
+    // Actualizar link activo en el menú
+    const links = document.querySelectorAll('nav ul li a');
+    links.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('onclick').includes(sectionId)) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Funciones básicas para consola (simulado)
+function startServer() {
+    appendConsole('Servidor iniciado...');
+    updateUsage(30, 40);
+}
+function stopServer() {
+    appendConsole('Servidor detenido.');
+    updateUsage(0, 0);
+}
+function restartServer() {
+    appendConsole('Reiniciando servidor...');
+    setTimeout(() => {
+        appendConsole('Servidor reiniciado.');
+        updateUsage(25, 35);
+    }, 2000);
+}
+function appendConsole(text) {
+    const consoleOutput = document.getElementById('consoleOutput');
+    consoleOutput.innerHTML += text + '<br>';
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+function updateUsage(ram, cpu) {
+    document.getElementById('ramUsage').innerText = ram + 'GB';
+    document.getElementById('cpuUsage').innerText = cpu + '%';
+}
+
+// Guardar configuración simulada
+function saveSettings(event) {
+    event.preventDefault();
+    const form = event.target;
+    alert(`Configuración guardada:\nServidor: ${form.serverName.value}\nSoftware: ${form.software.value}\nVersión: ${form.version.value}\nIP: ${form.ip.value}\nPuerto: ${form.port.value}\nRAM: ${form.ram.value}GB\nCPU: ${form.cpu.value} Cores`);
+}
+
+// Server Team - Añadir y eliminar usuarios
+function addUser(event) {
+    event.preventDefault();
+    const userName = document.getElementById('newUserName').value.trim();
+    const userRole = document.getElementById('newUserRole').value;
+    if (!userName) return alert('Ingrese un nombre de usuario válido.');
+    
+    const tbody = document.querySelector('#teamTable tbody');
+    const newRow = document.createElement('tr');
+
+    newRow.innerHTML = `
+        <td>${userName}</td>
+        <td>${userRole}</td>
+        <td><button onclick="removeUser(this)">Eliminar</button></td>
+    `;
+
+    tbody.appendChild(newRow);
+    document.getElementById('addUserForm').reset();
+}
+
+function removeUser(button) {
+    if(confirm('¿Seguro que quieres eliminar este usuario del equipo?')) {
+        const row = button.closest('tr');
+        row.remove();
+    }
+}
+
+// Mostrar la sección dashboard al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    showSection('dashboard');
+});
