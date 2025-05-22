@@ -110,3 +110,100 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Hosting - Hosting Estrella</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Crear Servidor Minecraft</h1>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="hosting.html">Crear Hosting</a>
+      <a href="panel.html">Panel</a>
+    </nav>
+  </header>
+
+  <main>
+    <form id="createServerForm">
+      <label for="serverName">Nombre del servidor:</label>
+      <input type="text" id="serverName" name="serverName" required placeholder="Ejemplo: AmatistMC.net" />
+
+      <label for="domain">Dominio:</label>
+      <select id="domain" name="domain">
+        <option value=".net">.net</option>
+        <option value=".xyz">.xyz</option>
+        <option value=".com">.com</option>
+      </select>
+
+      <label for="software">Software:</label>
+      <select id="software" name="software">
+        <option value="spigot">Spigot</option>
+        <option value="bukkit">Bukkit</option>
+        <option value="paper">Paper</option>
+      </select>
+
+      <label for="ram">RAM (GB):</label>
+      <input type="number" id="ram" name="ram" min="1" max="16" value="6" required />
+
+      <label for="maxPlayers">Máximo jugadores:</label>
+      <input type="number" id="maxPlayers" name="maxPlayers" min="1" max="80" value="80" required />
+
+      <label for="plugins">Plugins / Mobs:</label>
+      <textarea id="plugins" name="plugins" placeholder="Lista de plugins o mobs separados por comas"></textarea>
+
+      <button type="submit">Crear Servidor</button>
+    </form>
+
+    <div id="serverList">
+      <h2>Mis servidores</h2>
+      <ul id="servers"></ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Hosting Estrella. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('createServerForm');
+    const serverList = document.getElementById('servers');
+    let servers = JSON.parse(localStorage.getItem('servers') || '[]');
+
+    function renderServers() {
+      serverList.innerHTML = '';
+      servers.forEach((server, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${server.serverName}${server.domain} - ${server.software} - RAM: ${server.ram}GB - Max Players: ${server.maxPlayers}`;
+        serverList.appendChild(li);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (servers.length >= 50) {
+        alert('Has alcanzado el límite de 50 servidores.');
+        return;
+      }
+      const newServer = {
+        serverName: form.serverName.value,
+        domain: form.domain.value,
+        software: form.software.value,
+        ram: form.ram.value,
+        maxPlayers: form.maxPlayers.value,
+        plugins: form.plugins.value.split(',').map(p => p.trim()).filter(p => p.length > 0),
+      };
+      servers.push(newServer);
+      localStorage.setItem('servers', JSON.stringify(servers));
+      renderServers();
+      form.reset();
+    });
+
+    renderServers();
+  </script>
+</body>
+</html>
