@@ -5,41 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mi Página Personal</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background: #f4f4f9;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    h1 {
-      color: #0077cc;
-      margin-bottom: 5px;
-    }
-    section {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    a {
-      color: #0077cc;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    ul {
-      list-style-type: square;
-      padding-left: 20px;
-    }
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; color: #333; line-height: 1.6; }
+    header { text-align: center; margin-bottom: 40px; }
+    h1 { color: #0077cc; margin-bottom: 5px; }
+    nav { text-align: center; margin-bottom: 20px; }
+    nav a { margin: 0 10px; color: #0077cc; text-decoration: none; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    section { max-width: 600px; margin: auto; background: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    ul { list-style-type: square; padding-left: 20px; }
   </style>
 </head>
 <body>
@@ -47,6 +20,10 @@
     <h1>Hola, soy [Tu Nombre]</h1>
     <p>Bienvenido a mi página personal.</p>
   </header>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="hosting.html" target="_blank">Panel de Hosting</a>
+  </nav>
 
   <section>
     <h2>Sobre mí</h2>
@@ -74,8 +51,8 @@
 
   <section>
     <h2>Hosting</h2>
-    <p>Esta página está alojada en GitHub Pages y está disponible 24/7 en:</p>
-    <p><a href="https://srmisterio269.github.io/Hosting-Estrellal/" target="_blank">https://srmisterio269.github.io/Hosting-Estrellal/</a></p>
+    <p>Accede al panel de hosting para crear tus servidores personalizados:</p>
+    <p><a href="hosting.html" target="_blank">Abrir Panel de Hosting</a></p>
   </section>
 </body>
 </html>
